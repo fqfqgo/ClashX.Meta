@@ -61,6 +61,7 @@ jobs:
     - name: install deps
       run: |
         bash install_dependency.sh
+        rm -rf ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm
         xcodebuild -resolvePackageDependencies -project ClashX.xcodeproj
         
 
