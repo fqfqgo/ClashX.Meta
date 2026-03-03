@@ -41,19 +41,22 @@ jobs:
 
     - name: build infos
       run: |
-        /usr/libexec/PlistBuddy -c "Set CFBundleVersion $(git rev-list --count origin/master..origin/meta)" ClashX/Info.plist
-        /usr/libexec/PlistBuddy -c "Set CFBundleShortVersionString $(git describe --tags --abbrev=0)" ClashX/Info.plist
-        /usr/libexec/PlistBuddy -c "Add coreVersion string $(ls clash.meta | grep -m1 "" | sed -ne 's/.*64-\(.*\).gz/\1/p')" ClashX/Info.plist
-        /usr/libexec/PlistBuddy -c "Add gitBranch string $GITHUB_REF_NAME" ClashX/Info.plist
-        /usr/libexec/PlistBuddy -c "Add gitCommit string ${GITHUB_SHA::7}" ClashX/Info.plist
-        /usr/libexec/PlistBuddy -c "Add buildTime string $(date +%Y-%m-%d\ %H:%M)" ClashX/Info.plist
-
-        /usr/libexec/PlistBuddy -c 'Print CFBundleVersion' ClashX/Info.plist
-        /usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' ClashX/Info.plist
-        /usr/libexec/PlistBuddy -c 'Print coreVersion' ClashX/Info.plist
-        /usr/libexec/PlistBuddy -c 'Print gitBranch' ClashX/Info.plist
-        /usr/libexec/PlistBuddy -c 'Print gitCommit' ClashX/Info.plist
-        /usr/libexec/PlistBuddy -c 'Print buildTime' ClashX/Info.plist
+        PLIST="ClashX/Info.plist"
+        BUNDLE_VERSION=$(git rev-list --count origin/master..HEAD 2>/dev/null || git rev-list --count HEAD 2>/dev/null || echo "1")
+        SHORT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "1.0.0")
+        CORE_VER=$(ls clash.meta 2>/dev/null | grep -m1 "\.gz$" | sed -ne 's/.*64-\(.*\).gz/\1/p' || echo "")
+        /usr/libexec/PlistBuddy -c "Set CFBundleVersion $BUNDLE_VERSION" "$PLIST"
+        /usr/libexec/PlistBuddy -c "Set CFBundleShortVersionString $SHORT_VERSION" "$PLIST"
+        /usr/libexec/PlistBuddy -c "Delete :coreVersion" "$PLIST" 2>/dev/null || true
+        /usr/libexec/PlistBuddy -c "Add coreVersion string $CORE_VER" "$PLIST"
+        /usr/libexec/PlistBuddy -c "Delete :gitBranch" "$PLIST" 2>/dev/null || true
+        /usr/libexec/PlistBuddy -c "Add gitBranch string $GITHUB_REF_NAME" "$PLIST"
+        /usr/libexec/PlistBuddy -c "Delete :gitCommit" "$PLIST" 2>/dev/null || true
+        /usr/libexec/PlistBuddy -c "Add gitCommit string ${GITHUB_SHA::7}" "$PLIST"
+        /usr/libexec/PlistBuddy -c "Delete :buildTime" "$PLIST" 2>/dev/null || true
+        /usr/libexec/PlistBuddy -c "Add buildTime string $(date +%Y-%m-%d\ %H:%M)" "$PLIST"
+        /usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$PLIST"
+        /usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$PLIST"
 
     - name: install deps
       run: |
@@ -63,7 +66,7 @@ jobs:
 
     - name: build
       run: |
-        xcodebuild archive -project ClashX.xcodeproj -scheme ClashX\ Meta -archivePath archive/ClashX.xcarchive -showBuildTimingSummary -allowProvisioningUpdates
+        xcodebuild archive -project ClashX.xcodeproj -scheme ClashX\ Meta -archivePath archive/ClashX.xcarchive -showBuildTimingSummary -allowProvisioningUpdates 2>&1 | tee build.log; BUILD_EXIT=${PIPESTATUS[0]}; [ "$BUILD_EXIT" -ne 0 ] && (echo "--- Build failed, last 100 lines ---"; tail -100 build.log); exit "$BUILD_EXIT"
 
     - name: create zip
       run: ditto -c -k --sequesterRsrc --keepParent archive/ClashX.xcarchive/Products/Applications/ClashX\ Meta.app "ClashX Meta.zip"
