@@ -135,23 +135,61 @@ class RemoteConfigManager {
         }
     }
 
-    static func getRemoteConfigData(config: RemoteConfigModel, complete: @escaping ((String?, String?) -> Void)) {
+    /// Fetches remote config. If response has Subscription-Encryption: true, decrypts with password (or keychain).
+    /// - Parameters:
+    ///   - config: Remote config model
+    ///   - password: Password from UI when adding; nil will use keychain for existing config
+    ///   - complete: (content, suggestedFilename, errorMessage). If errorMessage != nil, content is nil.
+    static func getRemoteConfigData(config: RemoteConfigModel, password: String? = nil, complete: @escaping ((String?, String?, String?) -> Void)) {
         guard var urlRequest = try? URLRequest(url: config.url, method: .get) else {
-            assertionFailure()
-            Logger.log("[getRemoteConfigData] url incorrect,\(config.name) \(config.url)")
+            Logger.log("[getRemoteConfigData] url incorrect, \(config.name) \(config.url)")
+            complete(nil, nil, NSLocalizedString("Invalid URL", comment: ""))
             return
         }
         urlRequest.cachePolicy = .reloadIgnoringCacheData
 
         AF.request(urlRequest)
             .validate()
-            .responseString(encoding: .utf8) { res in
-                complete(try? res.result.get(), res.response?.suggestedFilename)
+            .responseData { res in
+                switch res.result {
+                case .failure(let err):
+                    complete(nil, nil, err.localizedDescription)
+                    return
+                case .success(let data):
+                    let suggestedFilename = res.response?.suggestedFilename
+                    let encHeader = (res.response as? HTTPURLResponse)?.value(forHTTPHeaderField: kSubscriptionEncryptionHeader)
+                    if isSubscriptionEncrypted(headerValue: encHeader) {
+                        let pwd = password?.isEmpty == false ? password : SubscriptionPasswordStorage.getPassword(forConfigName: config.name)
+                        if pwd == nil || pwd?.isEmpty == true {
+                            complete(nil, nil, NSLocalizedString("Subscription encrypted, please enter website login password", comment: ""))
+                            return
+                        }
+                        guard let decrypted = tryDecryptSubscription(password: pwd!, base64Data: data),
+                              let str = String(data: decrypted, encoding: .utf8) else {
+                            complete(nil, nil, NSLocalizedString("Decryption failed, please check password", comment: ""))
+                            return
+                        }
+                        complete(str, suggestedFilename, nil)
+                    } else {
+                        if let str = String(data: data, encoding: .utf8) {
+                            complete(str, suggestedFilename, nil)
+                        } else {
+                            complete(nil, nil, NSLocalizedString("Download fail", comment: ""))
+                        }
+                    }
+                }
             }
     }
 
-    static func updateConfig(config: RemoteConfigModel, complete: ((String?) -> Void)? = nil) {
-        getRemoteConfigData(config: config) { configString, suggestedFilename in
+    static func updateConfig(config: RemoteConfigModel, password: String? = nil, complete: ((String?) -> Void)? = nil) {
+        if let pwd = password, !pwd.isEmpty {
+            SubscriptionPasswordStorage.savePassword(pwd, forConfigName: config.name)
+        }
+        getRemoteConfigData(config: config, password: password) { configString, suggestedFilename, errorMessage in
+            if let err = errorMessage {
+                complete?(err)
+                return
+            }
             guard let newConfig = configString else {
                 complete?(NSLocalizedString("Download fail", comment: ""))
                 return

@@ -736,6 +736,7 @@
                         <outlet property="socksPortMenuItem" destination="Uy1-g8-r6Q" id="NiI-Gy-9Sa"/>
                         <outlet property="statusMenu" destination="Afa-lD-EbR" id="cov-E9-WrO"/>
                         <outlet property="tunModeMenuItem" destination="ZoW-Ax-rde" id="ep1-C4-irW"/>
+                        <outlet property="launchBrowserMenuItem" destination="Lch-Br-wId" id="Lch-Br-out"/>
                     </connections>
                 </customObject>
                 <menu id="Afa-lD-EbR">
@@ -774,6 +775,11 @@
                         <menuItem title="Tun mode" keyEquivalent="e" id="ZoW-Ax-rde">
                             <connections>
                                 <action selector="actionSetTunMode:" target="Voe-Tx-rLC" id="Wx4-MO-YvW"/>
+                            </connections>
+                        </menuItem>
+                        <menuItem title="Launch Browser" id="Lch-Br-wId">
+                            <connections>
+                                <action selector="actionLaunchBrowser:" target="Voe-Tx-rLC" id="Lch-Br-act"/>
                             </connections>
                         </menuItem>
                         <menuItem title="Copy shell command" keyEquivalent="c" id="Jmb-PK-rMW">

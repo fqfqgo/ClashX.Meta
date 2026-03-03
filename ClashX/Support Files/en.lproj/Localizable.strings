@@ -103,6 +103,17 @@
 /* No comment provided by engineer. */
 "Download fail" = "Download fail";
 
+/* Subscription decryption */
+"Decryption failed, please check password" = "Decryption failed, please check password";
+"Hide" = "Hide";
+"Invalid URL" = "Invalid URL";
+"Please add again with correct password if subscription is encrypted." = "Please add again with correct password if subscription is encrypted.";
+"Enter website login password and tap Retry." = "Enter website login password and tap Retry.";
+"Retry" = "Retry";
+"Show" = "Show";
+"Subscription encrypted, please enter website login password" = "Subscription encrypted, please enter website login password";
+"Website login password:" = "Website login password:";
+
 /* No comment provided by engineer. */
 "Download Meta core" = "Download Meta core";
 
@@ -162,6 +173,11 @@
 
 /* No comment provided by engineer. */
 "Invalid input" = "Invalid input";
+
+/* Launch Browser */
+"Config not loaded" = "Config not loaded";
+"Launch Browser Failed" = "Launch Browser Failed";
+"Proxy port not configured" = "Proxy port not configured";
 
 /* No comment provided by engineer. */
 "Legacy Install" = "Legacy Install";

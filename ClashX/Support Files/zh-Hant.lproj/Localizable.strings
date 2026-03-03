@@ -91,6 +91,17 @@
 /* No comment provided by engineer. */
 "Download fail" = "下載失敗";
 
+/* Subscription decryption */
+"Decryption failed, please check password" = "解密失敗，請檢查密碼";
+"Hide" = "隱藏";
+"Invalid URL" = "無效的 URL";
+"Please add again with correct password if subscription is encrypted." = "若訂閱已加密，請重新添加並輸入正確密碼。";
+"Enter website login password and tap Retry." = "請輸入網站登錄密碼後點擊「重試」。";
+"Retry" = "重試";
+"Show" = "顯示";
+"Subscription encrypted, please enter website login password" = "該訂閱已加密，請輸入網站登錄密碼";
+"Website login password:" = "網站登錄密碼:";
+
 /* No comment provided by engineer. */
 "Download speed" = "下載速率";
 
@@ -135,6 +146,11 @@
 
 /* No comment provided by engineer. */
 "Invalid input" = "輸入不合法";
+
+/* Launch Browser */
+"Config not loaded" = "配置未加載";
+"Launch Browser Failed" = "啟動瀏覽器失敗";
+"Proxy port not configured" = "未配置代理端口";
 
 /* No comment provided by engineer. */
 "Legacy Install" = "傳統安裝";

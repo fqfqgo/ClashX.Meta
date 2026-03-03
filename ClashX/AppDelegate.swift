@@ -49,6 +49,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet var connectionsMenuItem: NSMenuItem!
 
     @IBOutlet var tunModeMenuItem: NSMenuItem!
+    @IBOutlet var launchBrowserMenuItem: NSMenuItem!
 
     @IBOutlet var proxyProvidersMenu: NSMenu!
     @IBOutlet var ruleProvidersMenu: NSMenu!
@@ -827,6 +828,48 @@ extension AppDelegate {
 				self.tunModeMenuItem.state = enable ? .on : .off
 				self.tunModeMenuItem.isEnabled = true
             }
+        }
+    }
+
+    /// 使用独立数据目录和 ClashX 代理启动 Chrome，并打开谷歌网站（参考 FlClash）
+    @IBAction func actionLaunchBrowser(_ sender: Any?) {
+        guard let config = ConfigManager.shared.currentConfig else {
+            NSAlert.alert(with: NSLocalizedString("Config not loaded", comment: ""))
+            return
+        }
+        let port = config.usedHttpPort
+        guard port > 0 else {
+            NSAlert.alert(with: NSLocalizedString("Proxy port not configured", comment: ""))
+            return
+        }
+        guard let baseURL = Paths.applicationSupportDirectory() else {
+            NSAlert.alert(with: NSLocalizedString("Launch Browser Failed", comment: ""))
+            return
+        }
+        let chromeUserDataDir = baseURL.appendingPathComponent("clashx-chrome")
+        let fm = FileManager.default
+        if !fm.fileExists(atPath: chromeUserDataDir.path) {
+            try? fm.createDirectory(at: chromeUserDataDir, withIntermediateDirectories: true)
+        }
+        let markerFile = chromeUserDataDir.appendingPathComponent("clashx-profile.txt")
+        if !fm.fileExists(atPath: markerFile.path) {
+            try? "This folder is used by ClashX browser launch profile.\n".write(to: markerFile, atomically: true, encoding: .utf8)
+        }
+        let userDataArg = "--user-data-dir=\(chromeUserDataDir.path)"
+        let proxyArg = "--proxy-server=http://127.0.0.1:\(port)"
+        let homeUrl = "https://www.google.com"
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+        task.arguments = ["-n", "-a", "Google Chrome", "--args", "--new-window", userDataArg, proxyArg, homeUrl]
+        do {
+            try task.run()
+        } catch {
+            Logger.log("Launch browser failed: \(error)", level: .error)
+            let alert = NSAlert()
+            alert.messageText = NSLocalizedString("Launch Browser Failed", comment: "")
+            alert.informativeText = error.localizedDescription
+            alert.addButton(withTitle: NSLocalizedString("OK", comment: ""))
+            alert.runModal()
         }
     }
 

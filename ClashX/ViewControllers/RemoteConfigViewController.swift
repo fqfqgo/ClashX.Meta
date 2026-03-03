@@ -109,6 +109,7 @@ extension RemoteConfigViewController {
         let configName = remoteConfigInputView.getConfigName().0
         let isPlaceHolderName = remoteConfigInputView.getConfigName().1
         let configUrl = remoteConfigInputView.getUrlString()
+        let password = remoteConfigInputView.getPassword()
 
         if let existed = RemoteConfigManager.shared.configs.first(where: { $0.name == configName }) {
             guard allowAlt else {
@@ -117,33 +118,59 @@ extension RemoteConfigViewController {
             }
             existed.url = configUrl
             latestAddedConfig = existed
-            requestUpdate(config: existed)
+            requestUpdate(config: existed, password: password.isEmpty ? nil : password)
         } else {
             let remoteConfig = RemoteConfigModel(url: configUrl,
                                                  name: configName,
                                                  updateTime: nil)
             remoteConfig.isPlaceHolderName = !isPlaceHolderName
             RemoteConfigManager.shared.configs.append(remoteConfig)
-            requestUpdate(config: remoteConfig)
             latestAddedConfig = remoteConfig
+            requestUpdate(config: remoteConfig, password: password.isEmpty ? nil : password)
         }
 
         tableView.reloadData()
         updateButtonStatus()
     }
 
-    func requestUpdate(config: RemoteConfigModel) {
+    func requestUpdate(config: RemoteConfigModel, password: String? = nil) {
         guard !config.updating else { return }
         config.updating = true
-        RemoteConfigManager.updateConfig(config: config) {
+        RemoteConfigManager.updateConfig(config: config, password: password) {
             [weak self, weak config] errorString in
             guard let self = self, let config = config else { return }
             config.updating = false
             if let errorString = errorString {
-                let alert = NSAlert()
-                alert.messageText = errorString
-                alert.alertStyle = .warning
-                alert.runModal()
+                let errLower = errorString.lowercased()
+                let isDecryptError = errLower.contains("password") || errLower.contains("encrypt") || errLower.contains("decrypt") || errorString.contains("解密")
+                if isDecryptError {
+                    self.showDecryptPasswordPrompt(config: config, errorMessage: errorString) { [weak self] enteredPassword in
+                        guard let self = self else { return }
+                        if let pwd = enteredPassword, !pwd.isEmpty {
+                            self.requestUpdate(config: config, password: pwd)
+                        } else {
+                            if config == self.latestAddedConfig {
+                                RemoteConfigManager.shared.configs.removeAll { $0.name == config.name }
+                                RemoteConfigManager.shared.saveConfigs()
+                                self.latestAddedConfig = nil
+                            }
+                            self.tableView.reloadData()
+                            self.updateButtonStatus()
+                        }
+                    }
+                } else {
+                    if config == self.latestAddedConfig {
+                        RemoteConfigManager.shared.configs.removeAll { $0.name == config.name }
+                        RemoteConfigManager.shared.saveConfigs()
+                        self.latestAddedConfig = nil
+                        self.tableView.reloadData()
+                        self.updateButtonStatus()
+                    }
+                    let alert = NSAlert()
+                    alert.messageText = errorString
+                    alert.alertStyle = .warning
+                    alert.runModal()
+                }
             } else {
                 config.updateTime = Date()
                 RemoteConfigManager.shared.saveConfigs()
@@ -155,6 +182,41 @@ extension RemoteConfigViewController {
                 }
             }
             self.tableView.reloadDataKeepingSelection()
+        }
+    }
+
+    /// 加密/解密错误时弹出输入密码对话框，用户可输入后重试或取消
+    private func showDecryptPasswordPrompt(config: RemoteConfigModel, errorMessage: String, completion: @escaping (String?) -> Void) {
+        let alert = NSAlert()
+        alert.messageText = errorMessage
+        alert.alertStyle = .warning
+        alert.informativeText = NSLocalizedString("Enter website login password and tap Retry.", comment: "")
+        alert.addButton(withTitle: NSLocalizedString("Retry", comment: ""))
+        alert.addButton(withTitle: NSLocalizedString("Cancel", comment: ""))
+
+        let label = NSTextField(labelWithString: NSLocalizedString("Website login password:", comment: "Add remote config dialog"))
+        label.font = .systemFont(ofSize: NSFont.systemFontSize)
+        label.frame = NSRect(x: 0, y: 28, width: 140, height: 18)
+
+        let passwordField = NSSecureTextField(frame: NSRect(x: 0, y: 0, width: 220, height: 22))
+        passwordField.placeholderString = NSLocalizedString("Website login password:", comment: "")
+        passwordField.font = .systemFont(ofSize: NSFont.systemFontSize)
+
+        let container = NSView(frame: NSRect(x: 0, y: 0, width: 240, height: 52))
+        container.addSubview(label)
+        container.addSubview(passwordField)
+
+        alert.accessoryView = container
+        DispatchQueue.main.async {
+            alert.window?.makeFirstResponder(passwordField)
+        }
+        let response = alert.runModal()
+
+        if response == .alertFirstButtonReturn {
+            let pwd = passwordField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            completion(pwd.isEmpty ? nil : pwd)
+        } else {
+            completion(nil)
         }
     }
 }
@@ -211,6 +273,18 @@ extension RemoteConfigViewController: NSTableViewDataSource {
 class RemoteConfigAddView: NSView, NibLoadable {
     @IBOutlet private var urlTextField: NSTextField!
     @IBOutlet private var configNameTextField: NSTextField!
+    @IBOutlet private(set) var passwordLabel: NSTextField!
+    @IBOutlet private(set) var passwordSecureField: NSSecureTextField!
+    @IBOutlet private(set) var passwordPlainField: NSTextField!
+    @IBOutlet private(set) var showPasswordButton: NSButton!
+
+    private var isPasswordVisible = false
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        passwordLabel.stringValue = NSLocalizedString("Website login password:", comment: "Add remote config dialog")
+        showPasswordButton.title = NSLocalizedString("Show", comment: "Password field")
+    }
 
     func getUrlString() -> String {
         return urlTextField.stringValue
@@ -225,8 +299,35 @@ class RemoteConfigAddView: NSView, NibLoadable {
         return (configNameTextField.placeholderString ?? "", false)
     }
 
+    func getPassword() -> String {
+        if isPasswordVisible {
+            return passwordPlainField.stringValue
+        }
+        return passwordSecureField.stringValue
+    }
+
     func isVaild() -> Bool {
         return urlTextField.stringValue.isUrlVaild() && !getConfigName().0.isEmpty
+    }
+
+    /// Call to make password field first responder (e.g. when decrypt error)
+    func focusPasswordField() {
+        window?.makeFirstResponder(isPasswordVisible ? passwordPlainField : passwordSecureField)
+    }
+
+    @IBAction func togglePasswordVisibility(_ sender: Any) {
+        isPasswordVisible.toggle()
+        if isPasswordVisible {
+            passwordPlainField.stringValue = passwordSecureField.stringValue
+            passwordPlainField.isHidden = false
+            passwordSecureField.isHidden = true
+            showPasswordButton.title = NSLocalizedString("Hide", comment: "Password field")
+        } else {
+            passwordSecureField.stringValue = passwordPlainField.stringValue
+            passwordSecureField.isHidden = false
+            passwordPlainField.isHidden = true
+            showPasswordButton.title = NSLocalizedString("Show", comment: "Password field")
+        }
     }
 
     func setUrl(string: String, name: String? = nil, defaultName: String?) {

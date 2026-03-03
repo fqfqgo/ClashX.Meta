@@ -103,6 +103,17 @@
 /* No comment provided by engineer. */
 "Download fail" = "下载失败";
 
+/* Subscription decryption */
+"Decryption failed, please check password" = "解密失败，请检查密码";
+"Hide" = "隐藏";
+"Invalid URL" = "无效的 URL";
+"Please add again with correct password if subscription is encrypted." = "若订阅已加密，请重新添加并输入正确密码。";
+"Enter website login password and tap Retry." = "请输入网站登录密码后点击「重试」。";
+"Retry" = "重试";
+"Show" = "显示";
+"Subscription encrypted, please enter website login password" = "该订阅已加密，请输入网站登录密码";
+"Website login password:" = "网站登录密码:";
+
 /* No comment provided by engineer. */
 "Download Meta core" = "下载 Meta 内核";
 
@@ -162,6 +173,11 @@
 
 /* No comment provided by engineer. */
 "Invalid input" = "输入不合法";
+
+/* Launch Browser */
+"Config not loaded" = "配置未加载";
+"Launch Browser Failed" = "启动浏览器失败";
+"Proxy port not configured" = "未配置代理端口";
 
 /* No comment provided by engineer. */
 "Legacy Install" = "传统安装";

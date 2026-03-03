@@ -9,9 +9,55 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView misplaced="YES" id="c22-O7-iKe" customClass="RemoteConfigAddView" customModule="ClashX_Meta" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="338" height="54"/>
+            <rect key="frame" x="0.0" y="0.0" width="338" height="89"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pwd-label">
+                    <rect key="frame" x="8" y="35" width="120" height="16"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="75" id="pwd-lbl-w"/>
+                    </constraints>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="网站登录密码:" id="pwd-label-cell">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <secureTextField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pwd-secure">
+                    <rect key="frame" x="88" y="35" width="200" height="22"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="200" id="pwd-sec-w"/>
+                        <constraint firstAttribute="height" constant="22" id="pwd-sec-h"/>
+                    </constraints>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="pwd-secure-cell">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </secureTextField>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pwd-plain" hidden="YES">
+                    <rect key="frame" x="88" y="35" width="200" height="22"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="200" id="pwd-pl-w"/>
+                        <constraint firstAttribute="height" constant="22" id="pwd-pl-h"/>
+                    </constraints>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="pwd-plain-cell">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="pwd-show-btn">
+                    <rect key="frame" x="295" y="37" width="42" height="18"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="42" id="pwd-btn-w"/>
+                        <constraint firstAttribute="height" constant="18" id="pwd-btn-h"/>
+                    </constraints>
+                    <buttonCell key="cell" type="push" title="显示" bezelStyle="rounded" imagePosition="leading" state="off" id="pwd-btn-cell"/>
+                    <connections>
+                        <action selector="togglePasswordVisibility:" target="c22-O7-iKe" id="pwd-btn-act"/>
+                    </connections>
+                </button>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xFP-JM-BeS">
                     <rect key="frame" x="-2" y="3" width="87" height="16"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Config Name:" id="rjt-gw-VUT">
@@ -64,14 +110,27 @@
                 <constraint firstItem="vtb-1g-EKX" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="c22-O7-iKe" secondAttribute="leading" id="Ukx-6s-0as"/>
                 <constraint firstAttribute="bottom" secondItem="j93-9X-lPb" secondAttribute="bottom" id="XyQ-1t-Noi"/>
                 <constraint firstItem="2NP-oB-lQ0" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" id="e1l-5v-ivR"/>
+                <constraint firstItem="pwd-secure" firstAttribute="top" secondItem="2NP-oB-lQ0" secondAttribute="bottom" constant="10" id="pwd-top"/>
+                <constraint firstItem="j93-9X-lPb" firstAttribute="top" secondItem="pwd-secure" secondAttribute="bottom" constant="10" id="mDw-wK-F6f"/>
+                <constraint firstItem="pwd-secure" firstAttribute="leading" secondItem="2NP-oB-lQ0" secondAttribute="leading" id="pwd-lead"/>
+                <constraint firstItem="pwd-label" firstAttribute="centerY" secondItem="pwd-secure" secondAttribute="centerY" id="pwd-lbl-cy"/>
+                <constraint firstItem="pwd-label" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="8" id="pwd-lbl-lead"/>
+                <constraint firstItem="pwd-label" firstAttribute="trailing" secondItem="pwd-secure" secondAttribute="leading" constant="-5" id="pwd-sec-after-lbl"/>
+                <constraint firstItem="pwd-show-btn" firstAttribute="centerY" secondItem="pwd-secure" secondAttribute="centerY" id="pwd-btn-cy"/>
+                <constraint firstItem="pwd-show-btn" firstAttribute="leading" secondItem="pwd-secure" secondAttribute="trailing" constant="5" id="pwd-btn-lead"/>
+                <constraint firstItem="pwd-plain" firstAttribute="leading" secondItem="pwd-secure" secondAttribute="leading" id="pwd-pl-lead"/>
+                <constraint firstItem="pwd-plain" firstAttribute="top" secondItem="pwd-secure" secondAttribute="top" id="pwd-pl-top"/>
                 <constraint firstItem="xFP-JM-BeS" firstAttribute="centerY" secondItem="j93-9X-lPb" secondAttribute="centerY" id="fTr-bC-uDB"/>
                 <constraint firstItem="xFP-JM-BeS" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="c22-O7-iKe" secondAttribute="leading" id="hBd-mY-JdW"/>
                 <constraint firstItem="vtb-1g-EKX" firstAttribute="centerY" secondItem="2NP-oB-lQ0" secondAttribute="centerY" id="k4J-q4-c5M"/>
-                <constraint firstItem="j93-9X-lPb" firstAttribute="top" secondItem="2NP-oB-lQ0" secondAttribute="bottom" constant="10" id="mDw-wK-F6f"/>
             </constraints>
             <connections>
                 <outlet property="configNameTextField" destination="j93-9X-lPb" id="HYC-Z8-Sgo"/>
                 <outlet property="urlTextField" destination="2NP-oB-lQ0" id="ZC9-Jy-Utf"/>
+                <outlet property="passwordLabel" destination="pwd-label" id="pwd-lbl-out"/>
+                <outlet property="passwordPlainField" destination="pwd-plain" id="pwd-pl-out"/>
+                <outlet property="passwordSecureField" destination="pwd-secure" id="pwd-sec-out"/>
+                <outlet property="showPasswordButton" destination="pwd-show-btn" id="pwd-btn-out"/>
             </connections>
             <point key="canvasLocation" x="65.5" y="183"/>
         </customView>

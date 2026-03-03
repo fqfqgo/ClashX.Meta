@@ -232,6 +232,9 @@
 /* Class = "NSMenuItem"; title = "Tun mode"; ObjectID = "ZoW-Ax-rde"; */
 "ZoW-Ax-rde.title" = "Tun 模式";
 
+/* Class = "NSMenuItem"; title = "Launch Browser"; ObjectID = "Lch-Br-wId"; */
+"Lch-Br-wId.title" = "启动浏览器";
+
 /* Class = "NSTextFieldCell"; title = "Core Version"; ObjectID = "zwo-q5-k5N"; */
 "zwo-q5-k5N.title" = "内核版本";
 
