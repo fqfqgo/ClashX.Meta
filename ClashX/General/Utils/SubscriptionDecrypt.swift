@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CryptoKit
 
 /// HTTP response header for subscription encryption (same as v2rayN / FlClash)
 let kSubscriptionEncryptionHeader = "Subscription-Encryption"
@@ -17,13 +18,10 @@ func isSubscriptionEncrypted(headerValue: String?) -> Bool {
     return v.lowercased() == kSubscriptionEncryptionValue
 }
 
-/// MD5 hash of string, returns 32-char hex
+/// MD5 hash of string, returns 32-char hex (CryptoKit to avoid CommonCrypto in Swift for CI)
 private func md5Hex(_ input: String) -> String? {
     guard let data = input.data(using: .utf8) else { return nil }
-    var digest = [UInt8](repeating: 0, count: Int(CC_MD5_DIGEST_LENGTH))
-    data.withUnsafeBytes { buf in
-        _ = CC_MD5(buf.baseAddress, CC_LONG(data.count), &digest)
-    }
+    let digest = Insecure.MD5.hash(data: data)
     return digest.map { String(format: "%02hhx", $0) }.joined()
 }
 
@@ -55,25 +53,5 @@ func tryDecryptSubscription(password: String, base64Data: Data) -> Data? {
 }
 
 private func aesDecrypt(key: Data, iv: Data, cipher: Data) -> Data? {
-    var outLength: size_t = 0
-    let outCapacity = cipher.count + kCCBlockSizeAES128
-    var outBytes = [UInt8](repeating: 0, count: outCapacity)
-    let status = key.withUnsafeBytes { kBuf in
-        iv.withUnsafeBytes { iBuf in
-            cipher.withUnsafeBytes { cBuf in
-                CCCrypt(
-                    CCOperation(kCCDecrypt),
-                    CCAlgorithm(kCCAlgorithmAES),
-                    CCOptions(kCCOptionPKCS7Padding),
-                    kBuf.baseAddress, key.count,
-                    iBuf.baseAddress,
-                    cBuf.baseAddress, cipher.count,
-                    &outBytes, outCapacity,
-                    &outLength
-                )
-            }
-        }
-    }
-    guard status == kCCSuccess else { return nil }
-    return Data(bytes: outBytes, count: outLength)
+    AES128CBCDecrypt(key as NSData, iv as NSData, cipher as NSData) as Data?
 }

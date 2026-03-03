@@ -178,6 +178,7 @@
 		01FBC6312B9C2B0800810BFF /* ClashProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01FBC62F2B9C2B0800810BFF /* ClashProcess.swift */; };
 		491E6203258A424D00313AEF /* CommonUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 491E61FD258A424500313AEF /* CommonUtils.m */; };
 		49E0D0012B0A10010000A1B1 /* SubscriptionDecrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E0D0022B0A10010000A2B2 /* SubscriptionDecrypt.swift */; };
+		49E0D0052B0A10010000A1B5 /* AESDecryptHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E0D0062B0A10010000A2B6 /* AESDecryptHelper.m */; };
 		49E0D0032B0A10010000A1B3 /* SubscriptionPasswordStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E0D0042B0A10010000A2B4 /* SubscriptionPasswordStorage.swift */; };
 		F935B2FA23083EE6009E4D33 /* ProxySettingTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F935B2F923083EE6009E4D33 /* ProxySettingTool.m */; };
 /* End PBXBuildFile section */
@@ -334,7 +335,9 @@
 		499A485922ED781100F6C675 /* RemoteConfigAddView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RemoteConfigAddView.xib; sourceTree = "<group>"; };
 		499A485B22ED793C00F6C675 /* NSView+Nib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSView+Nib.swift"; sourceTree = "<group>"; };
 		49E0D0022B0A10010000A2B2 /* SubscriptionDecrypt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionDecrypt.swift; sourceTree = "<group>"; };
-		49E0D0042B0A10010000A2B4 /* SubscriptionPasswordStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPasswordStorage.swift; sourceTree = "<group>"; };
+		49E0D0062B0A10010000A2B6 /* AESDecryptHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AESDecryptHelper.m; sourceTree = "<group>"; };
+		49E0D0072B0A10010000A2B7 /* AESDecryptHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AESDecryptHelper.h; sourceTree = "<group>"; };
+		49E0D0042B0A10010000A2B4 /* SubscriptionPasswordStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPasswordStorage.swift; sourceTree = "<group>"; }; = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPasswordStorage.swift; sourceTree = "<group>"; };
 		499A485D22ED9B7C00F6C675 /* NSTableView+Reload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSTableView+Reload.swift"; sourceTree = "<group>"; };
 		499A486422EEA3FC00F6C675 /* Array+Safe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Safe.swift"; sourceTree = "<group>"; };
 		499ADAFC2498CC5900C488FE /* RemoteControlManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlManager.swift; sourceTree = "<group>"; };
@@ -602,6 +605,8 @@
 				49D176A62355FE680093DD7B /* NetworkChangeNotifier.swift */,
 				49B445152457CDF000B27E3E /* ClashStatusTool.swift */,
 				49D223382A1DA5F10002FFCB /* SSIDSuspendTool.swift */,
+				49E0D0062B0A10010000A2B6 /* AESDecryptHelper.m */,
+				49E0D0072B0A10010000A2B7 /* AESDecryptHelper.h */,
 				49E0D0022B0A10010000A2B2 /* SubscriptionDecrypt.swift */,
 				49E0D0042B0A10010000A2B4 /* SubscriptionPasswordStorage.swift */,
 				49FEC6682AD9369C00BAD9F5 /* Command.swift */,
@@ -1074,6 +1079,7 @@
 				01F336012AD10D0B0048AF77 /* NSTextField+Vibrancy.swift in Sources */,
 				0197255A2CA15D6400C14E49 /* UserNotificationCenter.swift in Sources */,
 				01F336022AD10D0B0048AF77 /* SSIDSuspendTool.swift in Sources */,
+				49E0D0052B0A10010000A1B5 /* AESDecryptHelper.m in Sources */,
 				49E0D0012B0A10010000A1B1 /* SubscriptionDecrypt.swift in Sources */,
 				49E0D0032B0A10010000A1B3 /* SubscriptionPasswordStorage.swift in Sources */,
 				01FBC6312B9C2B0800810BFF /* ClashProcess.swift in Sources */,
