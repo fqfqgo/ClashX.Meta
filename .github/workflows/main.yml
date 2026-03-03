@@ -66,7 +66,21 @@ jobs:
 
     - name: build
       run: |
-        xcodebuild archive -project ClashX.xcodeproj -scheme ClashX\ Meta -archivePath archive/ClashX.xcarchive -showBuildTimingSummary -allowProvisioningUpdates 2>&1 | tee build.log; BUILD_EXIT=${PIPESTATUS[0]}; [ "$BUILD_EXIT" -ne 0 ] && (echo "--- Build failed, last 100 lines ---"; tail -100 build.log); exit "$BUILD_EXIT"
+        xcodebuild archive -project ClashX.xcodeproj -scheme ClashX\ Meta -archivePath archive/ClashX.xcarchive -showBuildTimingSummary -allowProvisioningUpdates ARCHS=arm64 ONLY_ACTIVE_ARCH=NO 2>&1 | tee build.log; BUILD_EXIT=${PIPESTATUS[0]}
+        if [ "$BUILD_EXIT" -ne 0 ]; then
+          echo "--- Compiler errors (grep error:) ---"
+          grep -n "error:" build.log || true
+          echo "--- Last 120 lines ---"
+          tail -120 build.log
+          exit "$BUILD_EXIT"
+        fi
+
+    - name: upload build log on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-log-failed
+        path: build.log
 
     - name: create zip
       run: ditto -c -k --sequesterRsrc --keepParent archive/ClashX.xcarchive/Products/Applications/ClashX\ Meta.app "ClashX Meta.zip"
