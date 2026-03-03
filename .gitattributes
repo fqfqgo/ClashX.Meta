@@ -1,0 +1,6 @@
+# Ensure Xcode project files use LF so CI (macOS) can parse them correctly
+*.pbxproj text eol=lf
+*.plist text eol=lf
+*.xcscheme text eol=lf
+*.xcworkspacedata text eol=lf
+**/Package.resolved text eol=lf
