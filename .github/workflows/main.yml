@@ -33,10 +33,7 @@ jobs:
         fi
         echo "No conflict markers in xcodeproj."
 
-    # 2) 校验 project.pbxproj 格式（plutil 报错会给出具体行号）
-    - name: validate project.pbxproj (plutil -lint)
-      run: |
-        plutil -lint ClashX.xcodeproj/project.pbxproj
+    # 注：project.pbxproj 首行为 // !$*UTF8*$!，属 OpenStep plist，plutil 不认此格式会报 "Unexpected character /"，故不在此做 plutil -lint
 
     - name: fetch all refs for version info
       run: git fetch origin master 2>/dev/null || true

@@ -32,13 +32,7 @@ git checkout ClashX.xcodeproj/project.pbxproj
 
 ## 3. 校验项目文件格式
 
-在 macOS 上（或 CI 中）运行：
-
-```bash
-plutil -lint ClashX.xcodeproj/project.pbxproj
-```
-
-会提示是否合法及错误行号。**Workflow 已做**：步骤 `validate project.pbxproj (plutil -lint)` 会在构建前执行，失败则直接报错。
+`project.pbxproj` 首行是 `// !$*UTF8*$!`（OpenStep plist 格式），`plutil -lint` 会报 `Unexpected character / at line 1`，故 **不能用 plutil 校验此文件**。若需检查格式，只能在 Xcode 中打开工程或依赖 xcodebuild 报错信息。
 
 ---
 
