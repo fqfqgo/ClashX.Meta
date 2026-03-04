@@ -58,6 +58,17 @@ jobs:
         /usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$PLIST"
         /usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$PLIST"
 
+    - name: normalize Package.resolved for Xcode
+      run: |
+        PR="ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved"
+        if [ -f "$PR" ]; then
+          python3 -c "import json;p='$PR';d=json.load(open(p,'r',encoding='utf-8-sig'));open(p,'w',encoding='utf-8',newline='\n').write(json.dumps(d,indent=2));print('Package.resolved normalized')"
+        else
+          echo "Package.resolved not found, creating minimal so Xcode does not parse empty"
+          mkdir -p ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm
+          echo '{"pins":[],"version":2}' > "$PR"
+        fi
+
     - name: install deps
       run: bash install_dependency.sh
 
