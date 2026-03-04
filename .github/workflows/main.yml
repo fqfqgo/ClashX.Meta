@@ -54,17 +54,11 @@ jobs:
         /usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$PLIST"
         /usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$PLIST"
 
-    # Fork 仓库 checkout 后 Package.resolved 可能缺失或编码异常，导致 Xcode 解析 JSON 报错；用 ci/ 下已知有效文件覆盖
+    # Fork 仓库 checkout 后 Package.resolved 可能缺失或编码异常，导致 Xcode 解析报 "line 1 column 0"；用 ci/ 下已知有效 JSON 覆盖。勿 strip pbxproj 首行，否则 Xcode 会把 pbxproj 当 JSON 解析并报 line 2 错。
     - name: ensure Package.resolved (CI)
       run: |
         mkdir -p ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm
         cp ci/Package.resolved ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
-
-    # project.pbxproj 首行 "// !$*UTF8*$!" 若被 Xcode 当 JSON 解析会报 line 1 column 0；去掉首行使文件以 "{" 开头
-    - name: strip pbxproj first line (CI)
-      run: |
-        PBX="ClashX.xcodeproj/project.pbxproj"
-        tail -n +2 "$PBX" > "$PBX.new" && mv "$PBX.new" "$PBX"
 
     - name: install deps
       run: |
