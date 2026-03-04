@@ -58,22 +58,8 @@ jobs:
         /usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$PLIST"
         /usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$PLIST"
 
-    - name: fix project file for CI
-      run: |
-        # Strip UTF-8 BOM if present (can cause "JSON parse" error when Xcode reads project)
-        sed -i '' $'1s/^\xEF\xBB\xBF//' ClashX.xcodeproj/project.pbxproj
-        # Ensure LF line endings (CRLF from Windows can break project parsing on macOS)
-        sed -i '' 's/\r$//' ClashX.xcodeproj/project.pbxproj
-        # Ensure Package.resolved exists and is valid JSON (Xcode parses it on open; missing/empty causes parse error)
-        if [ -f ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved ]; then
-          sed -i '' 's/\r$//' ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
-        fi
-
     - name: install deps
-      run: |
-        bash install_dependency.sh
-        xcodebuild -resolvePackageDependencies -project ClashX.xcodeproj
-        
+      run: bash install_dependency.sh
 
     - name: build
       run: |
