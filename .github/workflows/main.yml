@@ -22,6 +22,7 @@ jobs:
       with:
         fetch-depth: 0
         ref: ${{ github.ref_name }}
+        submodules: recursive
 
     - name: fetch all refs for version info
       run: git fetch origin master 2>/dev/null || true
@@ -64,11 +65,16 @@ jobs:
         mkdir -p "$SWIFTPM_DIR"
         cp ci/Package.resolved "$SWIFTPM_DIR/Package.resolved"
 
-    - name: fix project.pbxproj encoding for CI
+    - name: diagnose project files (before build)
       run: |
-        PBX="ClashX.xcodeproj/project.pbxproj"
-        sed -i '' $'1s/^\xEF\xBB\xBF//' "$PBX"
-        sed -i '' 's/\r$//' "$PBX"
+        echo "=== conflict markers in xcodeproj ==="
+        grep -r "<<<<<<<\\|=======\\|>>>>>>>" ClashX.xcodeproj 2>/dev/null || echo "none"
+        echo "=== plutil -lint project.pbxproj ==="
+        plutil -lint ClashX.xcodeproj/project.pbxproj 2>&1 || true
+        echo "=== first 2 lines of project.pbxproj (hex) ==="
+        head -2 ClashX.xcodeproj/project.pbxproj | xxd | head -20
+        echo "=== first 2 lines of Package.resolved ==="
+        head -2 ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved | xxd | head -10
 
     - name: install deps
       run: bash install_dependency.sh
