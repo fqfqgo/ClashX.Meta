@@ -54,11 +54,13 @@ jobs:
         /usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$PLIST"
         /usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$PLIST"
 
-    # Fork 仓库 checkout 后 Package.resolved 可能缺失或编码异常，导致 Xcode 解析报 "line 1 column 0"；用 ci/ 下已知有效 JSON 覆盖。勿 strip pbxproj 首行，否则 Xcode 会把 pbxproj 当 JSON 解析并报 line 2 错。
+    # 用上游同款 Package.resolved，避免 fork 检出缺失/编码导致 "line 1 column 0"；失败则用 ci/ 副本
     - name: ensure Package.resolved (CI)
       run: |
-        mkdir -p ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm
-        cp ci/Package.resolved ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+        PR="ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved"
+        mkdir -p "$(dirname "$PR")"
+        curl -sSLf "https://raw.githubusercontent.com/MetaCubeX/ClashX.Meta/meta/ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved" -o "$PR" || cp ci/Package.resolved "$PR"
+        test -s "$PR" && echo "Package.resolved OK ($(wc -c < "$PR") bytes)" || (echo "::error::Package.resolved empty" && exit 1)
 
     - name: install deps
       run: |
