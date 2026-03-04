@@ -24,6 +24,20 @@ jobs:
         ref: ${{ github.ref_name }}
         submodules: recursive
 
+    # 1) 检查 Git 冲突标记（若有则直接失败，便于定位）
+    - name: check no conflict markers in project
+      run: |
+        if grep -rE '<<<<<<<|=======|>>>>>>>' ClashX.xcodeproj/ 2>/dev/null; then
+          echo "::error::Found Git conflict markers in ClashX.xcodeproj. Resolve them (e.g. in project.pbxproj) or run: git checkout ClashX.xcodeproj/project.pbxproj"
+          exit 1
+        fi
+        echo "No conflict markers in xcodeproj."
+
+    # 2) 校验 project.pbxproj 格式（plutil 报错会给出具体行号）
+    - name: validate project.pbxproj (plutil -lint)
+      run: |
+        plutil -lint ClashX.xcodeproj/project.pbxproj
+
     - name: fetch all refs for version info
       run: git fetch origin master 2>/dev/null || true
 
@@ -40,6 +54,7 @@ jobs:
         out-file-path: "clash.meta"
         token: ${{ secrets.GITHUB_TOKEN }}
 
+    # 仅修改 ClashX/Info.plist，不触碰 .xcodeproj / project.pbxproj，避免破坏工程解析
     - name: build infos
       run: |
         PLIST="ClashX/Info.plist"
