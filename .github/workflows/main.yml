@@ -64,8 +64,10 @@ jobs:
         sed -i '' $'1s/^\xEF\xBB\xBF//' ClashX.xcodeproj/project.pbxproj
         # Ensure LF line endings (CRLF from Windows can break project parsing on macOS)
         sed -i '' 's/\r$//' ClashX.xcodeproj/project.pbxproj
-        # Remove workspace SPM cache so Xcode resolves packages cleanly (avoids stale/corrupt Package.resolved)
-        rm -rf ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm
+        # Ensure Package.resolved exists and is valid JSON (Xcode parses it on open; missing/empty causes parse error)
+        if [ -f ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved ]; then
+          sed -i '' 's/\r$//' ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+        fi
 
     - name: install deps
       run: |
