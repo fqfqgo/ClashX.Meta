@@ -81,12 +81,16 @@ jobs:
       run: |
         echo "=== conflict markers in xcodeproj ==="
         grep -r "<<<<<<<\\|=======\\|>>>>>>>" ClashX.xcodeproj 2>/dev/null || echo "none"
-        echo "=== plutil -lint project.pbxproj ==="
-        plutil -lint ClashX.xcodeproj/project.pbxproj 2>&1 || true
         echo "=== first 2 lines of project.pbxproj (hex) ==="
         head -2 ClashX.xcodeproj/project.pbxproj | xxd | head -20
         echo "=== first 2 lines of Package.resolved ==="
         head -2 ClashX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved | xxd | head -10
+
+    # Xcode 15 有时会把 project 当 JSON 读，首行 "// !$*UTF8*$!" 导致 "line 1, column 0"；去掉首行让文件以 "{" 开头
+    - name: strip pbxproj first line for Xcode JSON parse
+      run: |
+        PBX="ClashX.xcodeproj/project.pbxproj"
+        tail -n +2 "$PBX" > "$PBX.tmp" && mv "$PBX.tmp" "$PBX"
 
     - name: install deps
       run: bash install_dependency.sh
