@@ -1224,10 +1224,10 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/ClashX/Support\\ Files",
-					"$(PROJECT_DIR)/ClashX/Support\\ Files",
-					"$(PROJECT_DIR)/ClashX/Support\\ Files",
-					"$(PROJECT_DIR)/ClashX/Support\\ Files",
+					"$(PROJECT_DIR)/ClashX/Support Files",
+					"$(PROJECT_DIR)/ClashX/Support Files",
+					"$(PROJECT_DIR)/ClashX/Support Files",
+					"$(PROJECT_DIR)/ClashX/Support Files",
 				);
 				INFOPLIST_FILE = ClashX/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1271,10 +1271,10 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/ClashX/Support\\ Files",
-					"$(PROJECT_DIR)/ClashX/Support\\ Files",
-					"$(PROJECT_DIR)/ClashX/Support\\ Files",
-					"$(PROJECT_DIR)/ClashX/Support\\ Files",
+					"$(PROJECT_DIR)/ClashX/Support Files",
+					"$(PROJECT_DIR)/ClashX/Support Files",
+					"$(PROJECT_DIR)/ClashX/Support Files",
+					"$(PROJECT_DIR)/ClashX/Support Files",
 				);
 				INFOPLIST_FILE = ClashX/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
